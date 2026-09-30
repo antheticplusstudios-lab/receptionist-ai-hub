@@ -80,7 +80,6 @@ async def _read_webhook(workflow_key: str):
 @app.get('/health')
 async def health():
     checks = {}
-
     for name, db, table in [
         ('db1', db1, 'organizations'),
         ('db2', db2, 'client_automations'),
@@ -89,31 +88,10 @@ async def health():
     ]:
         try:
             await db.table(table, select='*', limit=1)
-            checks[name] = {'ok': True}
-        except httpx.HTTPStatusError as e:
-            checks[name] = {
-                'ok': False,
-                'error_type': 'http',
-                'status_code': e.response.status_code,
-                'response': e.response.text[:300]
-            }
-        except httpx.RequestError as e:
-            checks[name] = {
-                'ok': False,
-                'error_type': 'connection',
-                'message': str(e)[:300]
-            }
-        except Exception as e:
-            checks[name] = {
-                'ok': False,
-                'error_type': type(e).__name__,
-                'message': str(e)[:300]
-            }
-
-    return {
-        'ok': all(v['ok'] for v in checks.values()),
-        'databases': checks
-    }
+            checks[name] = True
+        except Exception:
+            checks[name] = False
+    return {'ok': all(checks.values()), 'databases': checks}
 
 @app.post('/v1/runtime/{automation_id}/eligibility')
 async def runtime_eligibility(automation_id: str, user: dict = Depends(current_user)):
