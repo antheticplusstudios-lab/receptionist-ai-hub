@@ -1,0 +1,3 @@
+- All AI calls go through routeChat() in src/lib/llm-router.server.ts (active llm_api_keys by priority, cooldown/failover — no external gateway fallback), logged to llm_requests — one canonical provider path.
+- Widget runtime resolves only client_automations by script_token; served at /widget.js from src/lib/widget-runtime.ts — Gen 1 automation_instances is retired for widgets.
+- Orders are created only via the place_order() RPC which prices from product_prices — never trust browser totals.
