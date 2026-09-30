@@ -9,10 +9,12 @@ class SupabaseRest:
         self.key = key
 
     def _headers(self, bearer: str | None = None) -> dict[str, str]:
-        h = {'apikey': self.key, 'Content-Type': 'application/json'}
-        if bearer:
-            h['Authorization'] = f'Bearer {bearer}'
-        return h
+        token = bearer or self.key
+        return {
+            'apikey': self.key,
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json',
+        }
 
     async def table(self, table: str, *, select: str = '*', filters: list[tuple[str, str]] | None = None,
                     order: str | None = None, limit: int | None = None, single: bool = False,
