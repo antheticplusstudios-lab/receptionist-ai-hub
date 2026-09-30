@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 import hashlib
 import hmac
 import base64
+import httpx
 import time
 import redis.asyncio as redis
 from fastapi import FastAPI, Header, HTTPException, WebSocket, WebSocketDisconnect, Depends, Query, Request
