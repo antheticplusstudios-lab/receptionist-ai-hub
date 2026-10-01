@@ -17,6 +17,7 @@ import tailwindcss from "@tailwindcss/vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
+import { nitro } from "nitro/vite";
 
 // Nitro deployment target. Override with NITRO_PRESET, e.g. "node-server"
 // (self-hosted / Docker), "vercel", "netlify", "cloudflare-module". Defaults
@@ -33,11 +34,10 @@ export default defineConfig({
     tailwindcss(),
     tanstackRouter({ target: "react", autoCodeSplitting: true }),
     tanstackStart({
-      // Redirect TanStack Start's bundled server entry to src/server.ts (our
-      // SSR error wrapper) — unchanged from the previous config.
+      // Redirect TanStack Start's bundled server entry to src/server.ts.
       server: { entry: "server" },
-      target: NITRO_PRESET,
     }),
+    nitro({ preset: NITRO_PRESET }),
     viteReact(),
   ],
 });
