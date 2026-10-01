@@ -62,6 +62,6 @@ export const adminCreateWorkflowWebhook = createServerFn({ method: "POST" }).mid
   const { error } = await db4Admin.from("workflow_webhooks").insert({ workflow_id: workflow.id, endpoint_key_hash: endpointKeyHash, secret_ciphertext: encryptSecret(signingSecret), is_active: true });
   if (error) throw new Error(error.message);
   await auditMutation(context, { action: "workflow.webhook.created", targetType: "workflow", targetId: workflow.id, clientId: String(workflow.client_id) });
-  const base = (process.env["FASTAPI_BACKEND_URL"] ?? "https://api.antheticplus.com").replace(/\/$/, "");
+  const base = (process.env["FASTAPI_BACKEND_URL"] ?? "https://backend-lilac-xi-79.vercel.app").replace(/\/$/, "");
   return { ok: true, endpoint: `${base}/v1/workflows/webhook/${endpointKey}`, signingSecret };
 });

@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/dashboard/portal/$id")({
 });
 
 const TABS = ["Overview", "Inbox & CRM", "Knowledge Base", "Features", "Widget", "Integrations"] as const;
-const FASTAPI_BASE = import.meta.env.VITE_API_GATEWAY_URL || "https://api.antheticplus.com";
+const FASTAPI_BASE = import.meta.env.VITE_API_GATEWAY_URL || "https://backend-lilac-xi-79.vercel.app";
 
 function copy(text: string) {
   void navigator.clipboard.writeText(text);
