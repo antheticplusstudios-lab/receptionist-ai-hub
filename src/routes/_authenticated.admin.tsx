@@ -6,7 +6,7 @@ import { useCurrentUser, useRole } from "@/hooks/use-portal";
 
 /**
  * Access matrix:
- *  - owner / partner  → every control-center page
+ *  - owner / admin / partner → every control-center page
  *  - verifier         → the verification queue only (no keys, scripts, pricing or team data)
  *  - client           → never; bounced to the client dashboard
  * The database enforces the same matrix through row-level security, so this gate is
@@ -22,7 +22,7 @@ function AdminGate() {
   // browser has the user and the role query has settled. Navigating earlier
   // bounces every signed-in owner straight back to the dashboard.
   const ready = !!user && !isLoading;
-  const isStaff = role === "owner" || role === "partner" || role === "verifier";
+  const isStaff = role === "owner" || role === "admin" || role === "partner" || role === "verifier";
   const isVerifier = role === "verifier";
   const onQueue = path.startsWith("/admin/verification");
   const offLimits = isVerifier && !onQueue;

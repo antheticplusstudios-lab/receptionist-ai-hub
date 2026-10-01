@@ -59,7 +59,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (state) => state.location.pathname });
   const { data: role } = useRole();
   const { data: user } = useCurrentUser();
-  const nav = adminNav.filter((item) => (item.roles as readonly string[]).includes(role ?? ""));
+  const effectiveRole = role === "admin" ? "owner" : role;
+  const nav = adminNav.filter((item) =>
+    (item.roles as readonly string[]).includes(effectiveRole ?? "")
+  );
   const initial = (user?.email ?? "A").charAt(0).toUpperCase();
 
   return (
