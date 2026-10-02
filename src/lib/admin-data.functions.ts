@@ -24,12 +24,11 @@ export const adminListAutomations = createServerFn({ method: "GET" }).middleware
   const ids = list.map((a) => a.id);
   const cids = [...new Set(list.map((a) => a.client_id))];
   const period = new Date().toISOString().slice(0, 7);
-  const [profiles, restrictions, organizations, health, usage, conversations, leads, subs, aiConfigs, integrations, installs, scripts, llmRequests] = await Promise.all([
+  const [profiles, owners, organizations, health, usage, conversations, leads, subs, aiConfigs, integrations, installs, scripts, llmRequests] = await Promise.all([
     cids.length ? db1Admin.from("profiles").select("id,user_id,client_id,default_organization_id,full_name,company_name,company_email,website_url,registered_origin_domain").in("client_id", cids) : Promise.resolve({ data: [] as any[] }),
-    cids.length ? db1Admin.from("organization_members").select("organization_id,user_id,role,is_active").in("organization_id", cids).eq("role", "owner").eq("is_active", true) : Promise.resolve({ data: [] as any[] }),
+    cids.length ? db1Admin.from("organization_members").select("organization_id,user_id,role").in("organization_id", cids).eq("role", "owner") : Promise.resolve({ data: [] as any[] }),
     cids.length ? db1Admin.from("organizations").select("id,name,signup_origin,origin_domain").in("id", cids) : Promise.resolve({ data: [] as any[] }),
-    cids.length ? db1Admin.from("organizations").select("id,name,signup_origin,origin_domain").in("id", cids) : Promise.resolve({ data: [] as any[] }),
-    ids.length ? db2Admin.from("automation_health").select("*").in("automation_id", ids) : Promise.resolve({ data: [] as any[] }),
+                                                                  ids.length ? db2Admin.from("automation_health").select("*").in("automation_id", ids) : Promise.resolve({ data: [] as any[] }),
     ids.length ? db2Admin.from("usage_meters").select("automation_id,tokens_used,call_minutes_used,sms_count_used,billing_period").eq("billing_period", period).in("automation_id", ids) : Promise.resolve({ data: [] as any[] }),
     ids.length ? db4Admin.from("conversations").select("automation_id,channel,last_message_at").in("automation_id", ids).order("last_message_at", { ascending: false }).limit(3000) : Promise.resolve({ data: [] as any[] }),
     ids.length ? db4Admin.from("leads").select("automation_id").in("automation_id", ids).limit(3000) : Promise.resolve({ data: [] as any[] }),
@@ -41,7 +40,7 @@ export const adminListAutomations = createServerFn({ method: "GET" }).middleware
     ids.length ? db3Admin.from("llm_requests").select("automation_id,status").in("automation_id", ids).eq("status", "error").gte("created_at", new Date(Date.now() - 86400000).toISOString()) : Promise.resolve({ data: [] as any[] }),
   ]);
   const pMap = new Map((profiles.data ?? []).map((p: any) => [p.client_id, p]));
-  const ownerMap = new Map((restrictions.data ?? []).map((r: any) => [r.organization_id, r.user_id]));
+  const ownerMap = new Map((owners.data ?? []).map((r: any) => [r.organization_id, r.user_id]));
   const orgMap = new Map((organizations.data ?? []).map((o: any) => [o.id, o]));
   const hMap = new Map((health.data ?? []).map((h: any) => [h.automation_id, h]));
   const uMap = new Map((usage.data ?? []).map((u: any) => [u.automation_id, u]));
